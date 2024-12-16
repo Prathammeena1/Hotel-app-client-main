@@ -8,6 +8,8 @@ const Login = ({display,setDisplay}) => {
         formState: { errors },
     } = useForm();
 
+    const onSubmit = ()=>{};
+
 
   if (!display) return null; // If display is false, do not render the component
 
