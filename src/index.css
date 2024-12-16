@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Airbnb Cereal App';
+    src: url('/fonts/Airbnb.ttf') format('truetype');
+}
+
+* {
+    font-family: 'Airbnb Cereal App', sans-serif;
+    color: #555;
+}
+
+
+.no-scrollBar::-webkit-scrollbar{
+    display: none;
+}
+
+
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  width: 0;
+  height: 0;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+
+
