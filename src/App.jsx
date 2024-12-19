@@ -18,8 +18,22 @@ import AllUser from "./pages/partials/AllUser";
 import AllPayment from "./pages/partials/AllPayment";
 import Allproperties from "./pages/partials/AllProperties";
 import AllBookings from "./pages/partials/AllBookings";
+import { useDispatch, useSelector } from "react-redux";
+import { asynccurrentuser } from "./store/actions/userAction";
 
 const App = () => {
+  
+  const user = useSelector(store => store.user)
+  console.log(user);
+
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    dispatch(asynccurrentuser());
+  },[dispatch])
+
+
+
 
   return (
     <>
