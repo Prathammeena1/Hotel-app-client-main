@@ -1,85 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Cards from "./partials/Cards";
-import { Link } from "react-router-dom";
+import { Link, useFetcher } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { deletePropertyService, viewMyPropertyService } from "../api/propertyServices";
+import { viewUserBookingService } from "../api/bookingServices";
+import { toast } from "react-toastify";
+import { calculateDuration } from "../utils/Math";
 
 const ProfilePage = () => {
-  const properties = [
-    {
-      id: 1,
-      image: [
-        "https://a0.muscache.com/im/pictures/miso/Hosting-654001690497595692/original/94605df9-10d9-4082-ad2d-3b11ec519386.jpeg?im_w=720",
-        "https://a0.muscache.com/im/pictures/miso/Hosting-654001690497595692/original/94605df9-10d9-4082-ad2d-3b11ec519386.jpeg?im_w=720",
-        "https://a0.muscache.com/im/pictures/miso/Hosting-654001690497595692/original/94605df9-10d9-4082-ad2d-3b11ec519386.jpeg?im_w=720",
-      ], // Array of additional image links
-      location: "Badowala, India",
-      distance: "773 kilometres away",
-      dates: "26 Nov – 1 Dec",
-      price: "₹15,404 night",
-    },
-    {
-      id: 12,
-      image: [
-        "https://a0.muscache.com/im/pictures/eab913c1-5f28-4d45-841b-0797378216e4.jpg?im_w=720",
-        "https://a0.muscache.com/im/pictures/eab913c1-5f28-4d45-841b-0797378216e4.jpg?im_w=720",
-        "https://a0.muscache.com/im/pictures/eab913c1-5f28-4d45-841b-0797378216e4.jpg?im_w=720",
-      ], // Array of additional image links
-      location: "New Delhi, India",
-      distance: "580 kilometres away",
-      dates: "24–29 Nov",
-      price: "₹7,303 night",
-      rating: 4.87,
-    },
-    {
-      id: 13,
-      image: [
-        "https://a0.muscache.com/im/pictures/miso/Hosting-654001690497595692/original/94605df9-10d9-4082-ad2d-3b11ec519386.jpeg?im_w=720",
-        "https://a0.muscache.com/im/pictures/miso/Hosting-654001690497595692/original/94605df9-10d9-4082-ad2d-3b11ec519386.jpeg?im_w=720",
-        "https://a0.muscache.com/im/pictures/miso/Hosting-654001690497595692/original/94605df9-10d9-4082-ad2d-3b11ec519386.jpeg?im_w=720",
-      ], // Array of additional image links
-      location: "Badowala, India",
-      distance: "773 kilometres away",
-      dates: "26 Nov – 1 Dec",
-      price: "₹15,404 night",
-    },
-    {
-      id: 14,
-      image: [
-        "https://a0.muscache.com/im/pictures/miso/Hosting-675108014847583143/original/a40ae4d9-6f8d-45d4-9994-5a004d31bcea.jpeg?im_w=720",
-        "https://a0.muscache.com/im/pictures/miso/Hosting-675108014847583143/original/a40ae4d9-6f8d-45d4-9994-5a004d31bcea.jpeg?im_w=720",
-        "https://a0.muscache.com/im/pictures/miso/Hosting-675108014847583143/original/a40ae4d9-6f8d-45d4-9994-5a004d31bcea.jpeg?im_w=720",
-      ], // Array of additional image links
-      location: "Anjar, India",
-      distance: "755 kilometres away",
-      dates: "17–22 Nov",
-      price: "₹20,520 night",
-    },
-    {
-      id: 15,
-      image: [
-        "https://a0.muscache.com/im/pictures/7f78dcb6-2e2c-4fa4-8efc-df2ce5053bfc.jpg?im_w=720",
-        "https://a0.muscache.com/im/pictures/7f78dcb6-2e2c-4fa4-8efc-df2ce5053bfc.jpg?im_w=720",
-        "https://a0.muscache.com/im/pictures/7f78dcb6-2e2c-4fa4-8efc-df2ce5053bfc.jpg?im_w=720",
-      ], // Array of additional image links
-      location: "Gurugram, India",
-      distance: "566 kilometres away",
-      dates: "24–29 Nov",
-      price: "₹4,597 night",
-      rating: 4.83,
-    },
-    {
-      id: 16,
-      image: [
-        "https://a0.muscache.com/im/pictures/eab913c1-5f28-4d45-841b-0797378216e4.jpg?im_w=720",
-        "https://a0.muscache.com/im/pictures/eab913c1-5f28-4d45-841b-0797378216e4.jpg?im_w=720",
-        "https://a0.muscache.com/im/pictures/eab913c1-5f28-4d45-841b-0797378216e4.jpg?im_w=720",
-      ], // Array of additional image links
-      location: "New Delhi, India",
-      distance: "580 kilometres away",
-      dates: "24–29 Nov",
-      price: "₹7,303 night",
-      rating: 4.87,
-    },
-  ];
+
+  const {user} = useSelector(store => store.user);
+  const [bookingsData, setbookingsData] = useState([]);
+  const [propertiesData, setpropertiesData] = useState([]);
+
+
+  const loadProperty = async()=>{
+    const res = await viewMyPropertyService();
+    setpropertiesData(res);
+  }
+  const loadBooking = async()=>{
+    const res = await viewUserBookingService();
+    setbookingsData(res);
+  }
+
+  console.log(propertiesData);
+  
+
+  useEffect(()=>{
+    if(user){
+      loadProperty();
+      loadBooking();
+    }
+  },[user])
 
   const bookings = [
     {
@@ -144,49 +96,60 @@ const ProfilePage = () => {
     },
   ];
 
-  const deleteHandler = (id) => {
-    console.log(`Deleted ${id} property`);
+  const deleteHandler = async (id) => {
+    const res = await deletePropertyService(id)
+    res?.message && toast.success(res.message)
+    loadProperty();
   };
+
   const bookingCancelHandler = (id) => {
     console.log(`Cancelled ${id} Booking`);
   };
 
-  return (
+
+  const formateDate = (data)=>{
+    const d = new Date(data);
+    return `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })} ${d.getFullYear()}`;
+  }
+
+
+
+  return user ? (
     <div className="h-full w-full pt-28 px-20 bg-zinc-50">
       <div className="flex h-full relative w-full gap-8">
         <div className="w-[30vw] p-6 py-10 sticky top-[16vh] bg-white rounded-3xl h-fit shadow-[0px_0px_30px_2px_#e4e4e7] flex justify-between items-center">
           {/* Profile Circle */}
           <div>
             <div className="flex items-center justify-center w-24 h-24 bg-black text-white text-5xl font-bold rounded-full mx-auto">
-              P
+              {user?.username[0].toUpperCase()}
             </div>
             {/* Name and Role */}
             <div className="text-center mt-4">
-              <h2 className="text-4xl text-black font-semibold">Pratham</h2>
-              <p className="text-gray-500 text-sm">Guest</p>
+              <h2 className="text-4xl text-black font-semibold">{user?.username}</h2>
+              <p className="text-gray-500 text-sm">{user.isAdmin ? "Admin" : "Guest"}</p>
             </div>
           </div>
           {/* Month Info */}
           <div className="">
-            <p className="text-lg font-bold">1</p>
-            <p className="text-gray-500 text-xs">Month on Airbnb</p>
+            <p className="text-lg font-bold">{calculateDuration(user.createdAt)}</p>
+            <p className="text-gray-500 text-xs">on Airbnb</p>
           </div>
         </div>
 
         <div className=" w-full pt-2">
           <h1 className="text-3xl font-bold mb-4">My properties</h1>
           <div className="grid grid-cols-4 gap-6">
-            {properties.map((property) => (
+            {propertiesData.length > 0 ? propertiesData.map((property) => (
               <div
-                key={property.id}
+                key={property._id}
                 className="border rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition "
               >
-                <Link to={`/property/${property.id}`}>
+                <Link to={`/property/${property._id}`}>
                   <div className="w-full h-40 relative">
                     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
                       <div className="w-full h-full flex items-center overflow-x-auto overflow-y-hidden no-scrollBar">
-                        {property.image &&
-                          property.image.map((image, index) => (
+                        {property.images &&
+                          property.images.map((image, index) => (
                             <img
                               key={index}
                               src={image}
@@ -207,13 +170,13 @@ const ProfilePage = () => {
 
                 <div className="flex gap-2 px-4">
                   <Link
-                    to={`/property/edit/${property.id}`}
+                    to={`/property/edit/${property._id}`}
                     className="cursor-pointer text-center border border-[#b17f44] text-[#b17f44] rounded-md py-2 w-full"
                   >
                     Edit
                   </Link>
                   <button
-                    onClick={() => deleteHandler(property.id)}
+                    onClick={() => deleteHandler(property._id)}
                     className="cursor-pointer text-center bg-[#b17f44] text-white rounded-md py-2 w-full"
                     type="submit"
                   >
@@ -221,7 +184,7 @@ const ProfilePage = () => {
                   </button>
                 </div>
               </div>
-            ))}
+            )) : <h1>No Property Yet!</h1>}
           </div>
 
           <h1 className="text-3xl font-bold my-4 mt-10">My Bookings</h1>
@@ -296,7 +259,7 @@ const ProfilePage = () => {
         </div>
       </div>
     </div>
-  );
+  ) : <h1>Loading....</h1>
 };
 
 export default ProfilePage;

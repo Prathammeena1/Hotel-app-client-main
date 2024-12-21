@@ -20,6 +20,7 @@ import Allproperties from "./pages/partials/AllProperties";
 import AllBookings from "./pages/partials/AllBookings";
 import { useDispatch, useSelector } from "react-redux";
 import { asynccurrentuser } from "./store/actions/userAction";
+import IsAdmin from "./components/auth/IsAdmin";
 
 const App = () => {
   
@@ -40,7 +41,7 @@ const App = () => {
       <Nav />
 
       <Routes>
-      <Route path="/admin-panel" element={<AdminPanel />}>
+      <Route path="/admin-panel" element={<IsAdmin><AdminPanel /></IsAdmin>}>
           {/* Child Route */}
           <Route path="users" element={<AllUser />} />
           <Route path="properties" element={<Allproperties />} />

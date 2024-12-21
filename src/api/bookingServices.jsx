@@ -11,9 +11,9 @@ export const createBookingService = async(bookingData) =>{
     }
 }
 
-export const viewUserBookingService = async(userId)=>{
+export const viewUserBookingService = async()=>{
     try {
-        const {data} = await axios.get(`/bookings/user/${userId}`);
+        const {data} = await axios.get(`/bookings/user`);
         return data;
     } catch (error) {
         toast.error(error.response.data.message)

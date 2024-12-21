@@ -19,8 +19,8 @@ const Cards = () => {
             <div className="w-full h-52 relative">
               <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
                 <div className="w-full h-full flex items-center overflow-x-auto overflow-y-hidden no-scrollBar">
-                  {property.image &&
-                    property.image.map((image, index) => (
+                  {property.images &&
+                    property.images.map((image, index) => (
                       <img
                         key={index}
                         src={image}

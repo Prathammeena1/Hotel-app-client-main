@@ -3,12 +3,15 @@ import Filter from "./Filter";
 import Login from "../Login";
 import Signup from "../Signup";
 import { Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Nav = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isLoginVisible, setIsLoginVisible] = useState(false);
   const [isSignupVisible, setIsSignupVisible] = useState(false);
-
+  const { pathname } = useLocation();
+  const isAdmin = useSelector(store => store.user?.user?.isAdmin);
+  
   const filterHandler = () => {
     setIsFilterVisible(!isFilterVisible);
   };
@@ -41,7 +44,6 @@ const Nav = () => {
     };
   }, []);
 
-  const { pathname } = useLocation();
 
   return (
     <>
@@ -57,7 +59,7 @@ const Nav = () => {
           </Link>
           <div className="flex gap-8 w-fit items-center">
             <Link to={'/property/create'} className="font-[600] text-sm">Add your property</Link>
-            <Link to={'/admin-panel/users'} className="font-[600] text-sm">Admin panel</Link>
+            {isAdmin && <Link to={'/admin-panel/users'} className="font-[600] text-sm">Admin panel</Link>}
             <div>
               <i className="ri-global-line text-lg"></i>
             </div>

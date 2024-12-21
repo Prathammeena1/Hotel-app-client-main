@@ -43,6 +43,8 @@ export const searchPropertyService = async (query) => {
 export const viewPropertyService = async (id) => {
   try {
     const { data } = await axios.get(`/properties/${id}`);
+    console.log(data);
+    
     return data;
   } catch (error) {
     toast.error(error.response.data.message);
