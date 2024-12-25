@@ -3,15 +3,18 @@ import Filter from "./Filter";
 import Login from "../Login";
 import Signup from "../Signup";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { asycnlogout } from "../../store/actions/userAction";
+import { toast } from "react-toastify";
 
 const Nav = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isLoginVisible, setIsLoginVisible] = useState(false);
   const [isSignupVisible, setIsSignupVisible] = useState(false);
   const { pathname } = useLocation();
-  const isAdmin = useSelector(store => store.user?.user?.isAdmin);
-  
+  const isAdmin = useSelector((store) => store.user?.user?.isAdmin);
+  const { isLoggedIn } = useSelector((store) => store.user);
+
   const filterHandler = () => {
     setIsFilterVisible(!isFilterVisible);
   };
@@ -44,12 +47,17 @@ const Nav = () => {
     };
   }, []);
 
+  const dispatch = useDispatch();
+  const logoutHandler = async () => {
+    await dispatch(asycnlogout());
+    toast.success("Logout Success");
+  };
 
   return (
     <>
       <nav className="fixed top-0 w-full z-[1]">
         <div className="nav-p1 w-full px-20 flex justify-between items-center border-b border-[#dfdfdf] bg-zinc-50">
-          <Link to={'/'} className="logo h-24">
+          <Link to={"/"} className="logo h-24">
             <img
               draggable="false"
               className="h-full object-cover"
@@ -58,8 +66,16 @@ const Nav = () => {
             />
           </Link>
           <div className="flex gap-8 w-fit items-center">
-            <Link to={'/property/create'} className="font-[600] text-sm">Add your property</Link>
-            {isAdmin && <Link to={'/admin-panel/users'} className="font-[600] text-sm">Admin panel</Link>}
+            {isLoggedIn && (
+              <Link to={"/property/create"} className="font-[600] text-sm">
+                Add your property
+              </Link>
+            )}
+            {isAdmin && (
+              <Link to={"/admin-panel/users"} className="font-[600] text-sm">
+                Admin panel
+              </Link>
+            )}
             <div>
               <i className="ri-global-line text-lg"></i>
             </div>
@@ -88,33 +104,36 @@ const Nav = () => {
                   isMenuVisible ? "initial" : "hidden"
                 } top-[110%] w-[280%] shadow-[0_4px_20px_3px_rgba(0,0,0,0.1)] overflow-hidden z-[2] right-0 bg-zinc-50 rounded-xl`}
               >
-                <Link to={"/profile"}>
-                <h3  className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6">
-                  My profile
-                </h3>
-                </Link>
-                <h3
-                  onClick={signupHandler}
-                  className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6"
-                >
-                  Sign up
-                </h3>
-                <h3
-                  onClick={loginHandler}
-                  className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6 border-b border-zinc-300"
-                >
-                  Log in
-                </h3>
-                
-                <h3 className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6">
-                  Host an experience
-                </h3>
-                <h3 className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6">
-                  Help Center
-                </h3>
-                <h3 className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6">
-                  Logout
-                </h3>
+                {isLoggedIn && <Link to={"/profile"}>
+                  <h3 className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6">
+                    My profile
+                  </h3>
+                </Link>}
+                {!isLoggedIn && (
+                  <>
+                    <h3
+                      onClick={signupHandler}
+                      className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6"
+                    >
+                      Sign up
+                    </h3>
+                    <h3
+                      onClick={loginHandler}
+                      className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6 border-b border-zinc-300"
+                    >
+                      Log in
+                    </h3>
+                  </>
+                )}
+
+                {isLoggedIn && (
+                  <h3
+                    onClick={logoutHandler}
+                    className="text-sm px-4 hover:bg-zinc-200/[.5] cursor-pointer transition-all ease-in-out duration-[.5s] py-6"
+                  >
+                    Logout
+                  </h3>
+                )}
               </div>
             </div>
           </div>

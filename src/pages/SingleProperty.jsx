@@ -142,7 +142,7 @@ const SingleProperty = () => {
           </div>
 
           <div className="w-fit mb-4">
-          <BookingCard nightRate={propertyData.price} />
+          <BookingCard property={propertyData} />
           </div>
         </div>
 

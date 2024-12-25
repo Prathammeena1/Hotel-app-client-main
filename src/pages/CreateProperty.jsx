@@ -21,8 +21,8 @@ const CreateProperty = () => {
       title: "Luxury Apartment in Downtown",
       description:
         "A spacious and modern 3-bedroom apartment located in the heart of the city. Features include a fully equipped kitchen, large balcony, and stunning city views.",
-      location: "Downtown, Cityville",
-      price: 4999,
+      location: "Karond, Bhopal",
+      price: 2999,
       amenities: [
         "Gym",
         "Swimming Pool",
@@ -31,12 +31,12 @@ const CreateProperty = () => {
         "Parking",
       ],
       images: [
+        "https://a0.muscache.com/im/pictures/1a284fe1-9332-412d-9635-4fefb3ca124d.jpg?im_w=720&im_format=avif",
+        "https://a0.muscache.com/im/pictures/1a284fe1-9332-412d-9635-4fefb3ca124d.jpg?im_w=720&im_format=avif",
+        "https://a0.muscache.com/im/pictures/d8d629d7-9307-4b24-a8ae-b01d95e36124.jpg?im_w=1200&im_format=avif",
         "https://a0.muscache.com/im/pictures/d8d629d7-9307-4b24-a8ae-b01d95e36124.jpg?im_w=1200&im_format=avif",
         "https://a0.muscache.com/im/pictures/1a284fe1-9332-412d-9635-4fefb3ca124d.jpg?im_w=720&im_format=avif",
         "https://a0.muscache.com/im/pictures/d8d629d7-9307-4b24-a8ae-b01d95e36124.jpg?im_w=1200&im_format=avif",
-        "https://a0.muscache.com/im/pictures/1a284fe1-9332-412d-9635-4fefb3ca124d.jpg?im_w=720&im_format=avif",
-        "https://a0.muscache.com/im/pictures/d8d629d7-9307-4b24-a8ae-b01d95e36124.jpg?im_w=1200&im_format=avif",
-        "https://a0.muscache.com/im/pictures/1a284fe1-9332-412d-9635-4fefb3ca124d.jpg?im_w=720&im_format=avif",
       ],
     };
 

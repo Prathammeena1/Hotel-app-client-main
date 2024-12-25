@@ -1,8 +1,19 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import { createBookingService } from "../api/bookingServices";
+import { viewPropertyService } from "../api/propertyServices";
+import { toast } from "react-toastify";
+import { createRazorpayOrder } from "../api/paymentServices";
 
 const BookingPage = () => {
   const { search } = useLocation();
+  const { id } = useParams();
+  // console.log(data);
   const data = decodeURIComponent(search)
     .split("?")[1]
     .split("&")
@@ -12,6 +23,53 @@ const BookingPage = () => {
       acc[key] = value.replace(/^"|"$/g, "");
       return acc;
     }, {});
+
+  const [paymentId, setpaymentId] = useState("");
+  const [property, setproperty] = useState(null);
+  const [status, setstatus] = useState("");
+  const [totalAmount, settotalAmount] = useState(0);
+  const navigate = useNavigate();
+
+  const handleConfirmOrder = async ()=>{
+    const {status,id} = await  createRazorpayOrder(totalAmount)
+    console.log(status,id)
+    setstatus(status);
+    setpaymentId(id);
+  }
+
+  const createBooking = async () => {
+    const bookingData = {
+      propertyId: id,
+      status: "Confirmed",
+      paymentId,
+      checkInDate: data.checkinDate,
+      checkOutDate: data.checkoutDate,
+      totalAmount,
+    };
+
+    await createBookingService(bookingData);
+    navigate("/");
+  };
+
+  const getproperty = async (id) => {
+    const property = await viewPropertyService(id);
+    setproperty(property);
+  };
+
+  useEffect(() => {
+    getproperty(id);
+    settotalAmount(data.price * data.nights * data.guests);
+  }, []);
+
+  useEffect(() => {
+    if (status === "authorized") {
+      createBooking();
+      toast.success("Order Confirmed");
+    } else if (status != "") {
+      toast.error("Payment failed. Please try again.");
+      navigate("/");
+    }
+  }, [status]);
 
   console.log(data);
 
@@ -30,7 +88,21 @@ const BookingPage = () => {
                 <div>
                   <p className="text-xl font-semibold text-black">Dates</p>
                   <p className="text-lg font-medium">
-                    {new Date(data.checkinDate).getDate() + " " + new Date(data.checkinDate).toLocaleString('default', { month: 'short' }) + " " + new Date(data.checkinDate).getFullYear()} – {new Date(data.checkoutDate).getDate() + " " + new Date(data.checkoutDate).toLocaleString('default', { month: 'short' }) + " " + new Date(data.checkoutDate).getFullYear()}
+                    {new Date(data.checkinDate).getDate() +
+                      " " +
+                      new Date(data.checkinDate).toLocaleString("default", {
+                        month: "short",
+                      }) +
+                      " " +
+                      new Date(data.checkinDate).getFullYear()}{" "}
+                    –{" "}
+                    {new Date(data.checkoutDate).getDate() +
+                      " " +
+                      new Date(data.checkoutDate).toLocaleString("default", {
+                        month: "short",
+                      }) +
+                      " " +
+                      new Date(data.checkoutDate).getFullYear()}
                   </p>
                 </div>
               </div>
@@ -42,7 +114,7 @@ const BookingPage = () => {
               </div>
             </div>
 
-            <button className="bg-[#b17f44] text-white font-bold py-2 px-10 rounded-lg mt-8">
+            <button onClick={handleConfirmOrder} className="bg-[#b17f44] text-white font-bold py-2 px-10 rounded-lg mt-8">
               Book Now
             </button>
           </section>
