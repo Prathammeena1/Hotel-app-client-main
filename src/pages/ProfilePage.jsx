@@ -3,7 +3,7 @@ import Cards from "./partials/Cards";
 import { Link, useFetcher } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { deletePropertyService, viewMyPropertyService } from "../api/propertyServices";
-import { viewUserBookingService } from "../api/bookingServices";
+import { cancelBookingService, viewUserBookingService } from "../api/bookingServices";
 import { toast } from "react-toastify";
 import { calculateDuration } from "../utils/Math";
 
@@ -23,7 +23,7 @@ const ProfilePage = () => {
     setbookingsData(res);
   }
 
-  console.log(propertiesData);
+  console.log(bookingsData);
   
 
   useEffect(()=>{
@@ -33,77 +33,16 @@ const ProfilePage = () => {
     }
   },[user])
 
-  const bookings = [
-    {
-      id: 1,
-      property: "Property1",
-      user: "User1",
-      checkInDate: "2022-11-26",
-      checkOutDate: "2022-12-01",
-      totalPrice: 15404,
-      status: "Confirmed",
-      razorpayOrderId: "order_123",
-      paymentDetails: {
-        paymentId: "payment_123",
-        orderId: "order_123",
-        signature: "signature_123",
-      },
-    },
-    {
-      id: 2,
-      property: "Property2",
-      user: "User2",
-      checkInDate: "2022-11-17",
-      checkOutDate: "2022-11-22",
-      totalPrice: 20520,
-      status: "Pending",
-      razorpayOrderId: "order_456",
-      paymentDetails: {
-        paymentId: "payment_456",
-        orderId: "order_456",
-        signature: "signature_456",
-      },
-    },
-    {
-      id: 3,
-      property: "Property3",
-      user: "User3",
-      checkInDate: "2022-11-24",
-      checkOutDate: "2022-11-29",
-      totalPrice: 4597,
-      status: "Cancelled",
-      razorpayOrderId: "order_789",
-      paymentDetails: {
-        paymentId: "payment_789",
-        orderId: "order_789",
-        signature: "signature_789",
-      },
-    },
-    {
-      id: 4,
-      property: "Property4",
-      user: "User4",
-      checkInDate: "2022-11-24",
-      checkOutDate: "2022-11-29",
-      totalPrice: 7303,
-      status: "Confirmed",
-      razorpayOrderId: "order_101",
-      paymentDetails: {
-        paymentId: "payment_101",
-        orderId: "order_101",
-        signature: "signature_101",
-      },
-    },
-  ];
-
   const deleteHandler = async (id) => {
     const res = await deletePropertyService(id)
     res?.message && toast.success(res.message)
     loadProperty();
   };
-
-  const bookingCancelHandler = (id) => {
-    console.log(`Cancelled ${id} Booking`);
+  
+  const bookingCancelHandler = async (id) => {
+    const response = await cancelBookingService(id);
+    toast.success(response.message)
+    loadBooking();
   };
 
 
@@ -189,14 +128,14 @@ const ProfilePage = () => {
 
           <h1 className="text-3xl font-bold my-4 mt-10">My Bookings</h1>
           <div className="grid grid-cols-3 gap-x-3">
-            {bookings.map((booking) => (
+            {bookingsData.map((booking) => (
               <div
-                key={booking.id}
+                key={booking._id}
                 className={`py-5 px-8 mb-2 rounded-xl shadow-[0px_0px_30px_2px_#e4e4e7] `}
               >
                 <div className="flex items-center w-full justify-between">
                   <h1 className="text-md font-bold ">Place </h1>
-                  <h1 className="text-sm font-light">{booking.property}</h1>
+                  <h1 className="text-sm font-light">{booking.property?.location || "Null"}</h1>
                 </div>
 
                 <div className="flex items-center w-full justify-between">
@@ -212,7 +151,7 @@ const ProfilePage = () => {
                 <div className="flex items-center w-full justify-between">
                   <h3 className="text-md font-bold ">Order ID </h3>
                   <h3 className="text-sm font-light">
-                    {booking.razorpayOrderId}
+                    {booking.razorpayOrderID}
                   </h3>
                 </div>
 
@@ -246,7 +185,7 @@ const ProfilePage = () => {
                 </div>
                 
                 {booking.status.toLowerCase() !== "cancelled" && <button
-                    onClick={() => bookingCancelHandler(property.id)}
+                    onClick={() => bookingCancelHandler(booking._id)}
                     className="cursor-pointer text-center border-[#b17f44] text-[#b17f44]  border rounded-md mt-3 py-2 w-full"
                     type="submit"
                   >

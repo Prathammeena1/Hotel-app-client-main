@@ -59,7 +59,7 @@ const handleRazorpayScreen = async (amount) => {
         description: "Payment Gateway",
         handler: function (response) {
           paymentFetch(response.razorpay_payment_id)
-            .then((status) => resolve(status))
+            .then((status) => resolve(status.payment))
             .catch((error) => reject(error));
         },
         theme: {

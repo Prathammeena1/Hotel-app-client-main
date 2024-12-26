@@ -30,22 +30,24 @@ const BookingPage = () => {
   const [totalAmount, settotalAmount] = useState(0);
   const navigate = useNavigate();
 
-  const handleConfirmOrder = async ()=>{
-    const {status,id} = await  createRazorpayOrder(totalAmount)
-    console.log(status,id)
+  const handleConfirmOrder = async () => {
+    const { status, id } = await createRazorpayOrder(totalAmount);
+    // console.log(status,id)
     setstatus(status);
     setpaymentId(id);
-  }
+  };
 
   const createBooking = async () => {
     const bookingData = {
       propertyId: id,
       status: "Confirmed",
       paymentId,
-      checkInDate: data.checkinDate,
-      checkOutDate: data.checkoutDate,
+      checkInDate: new Date(data.checkinDate),
+      checkOutDate: new Date(data.checkoutDate),
       totalAmount,
     };
+
+    console.log(bookingData);
 
     await createBookingService(bookingData);
     navigate("/");
@@ -114,7 +116,10 @@ const BookingPage = () => {
               </div>
             </div>
 
-            <button onClick={handleConfirmOrder} className="bg-[#b17f44] text-white font-bold py-2 px-10 rounded-lg mt-8">
+            <button
+              onClick={handleConfirmOrder}
+              className="bg-[#b17f44] text-white font-bold py-2 px-10 rounded-lg mt-8"
+            >
               Book Now
             </button>
           </section>
