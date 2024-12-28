@@ -4,6 +4,7 @@ import BookingCard from "./partials/BookingCard";
 import { useParams } from "react-router-dom";
 import { viewPropertyService } from "../api/propertyServices";
 import { viewReviews } from "../api/reviewServices";
+import { useForm } from "react-hook-form";
 
 const SingleProperty = () => {
 
@@ -11,6 +12,8 @@ const SingleProperty = () => {
   const [propertyData, setPropertyData] = useState(null);
   const [reviewsData, setreviewsData] = useState(null);
   const [avgRating, setavgRating] = useState(0);
+
+  const {register,handleSubmit,formState:{errors},getValues} = useForm();
   
 
   const getproperty = async (id)=>{
@@ -186,38 +189,65 @@ const SingleProperty = () => {
 
       {/* Reviews */}
       <div className="border-t pt-6 grid grid-cols-2 gap-4">
-        {reviewsData && reviewsData.length >0 &&  reviewsData.slice(0, 6).map((review, index) => (
-          <div key={index} className="mb-6">
-            <div className="flex items-center mb-2">
-              <img
-                src={review.image}
-                alt={review.name}
-                className="w-12 h-12 rounded-full mr-3"
-              />
-              <div>
-                <h3 className="font-semibold">{review.name}</h3>
-                <p className="text-sm text-gray-500">
-                  {review.timeOnAirbnb} years on Airbnb
+            {reviewsData.slice(0, 6).map((review, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex items-center mb-2">
+                  <div className="flex gap-3 items-center">
+                    <h3 className="font-semibold text-2xl">{review.user.username}</h3>
+                    <p className="text-sm text-gray-500">
+                      {calculateDuration(review.user.createdAt)} on Airbnb
+                    </p>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500 mb-1">
+                  {[...Array(review.rating)].map((_, index) => (
+                    <span key={index}>⭐️</span>
+                  ))} {calculateDuration(review.createdAt)} ago - Stayed a few nights
                 </p>
+                <p className="text-gray-700">{review.comment}</p>
               </div>
-            </div>
-            <p className="text-sm text-gray-500 mb-1">
-              ⭐️⭐️⭐️⭐️⭐️ {review.date} - Stayed a few nights
-            </p>
-            <p className="text-gray-700">{review.comment}</p>
-          </div>
-        ))}
-        {reviewsData?.length > 6 ? (
-          <button
-            className="text-center text-zinc-800 font-bold border-zinc-800 border rounded-md py-3 w-fit px-10 "
-            type="submit"
-          >
-            Show all {reviewsData.length} reviews
-          </button>
-        ) : (
-          ""
-        )}
+            ))}
+            {reviewsData.length > 6 ? (
+              <button
+                className="text-center text-zinc-800 font-bold border-zinc-800 border rounded-md py-3 w-fit px-10 "
+                type="submit"
+              >
+                Show all {reviewsData.length} reviews
+              </button>
+            ) : (
+              ""
+            )}
       </div>
+
+
+      {/* Add review */}
+      <div className="w-full py-4 flex flex-col items-start gap-4">
+            <form >
+              <div className="flex items-center gap-5">
+                <div className="flex items-center gap-2 flex-col">
+                  <div>
+                    {[...Array(5)].map((_, index) => (
+                      <label key={index} className="cursor-pointer" onClick={() => setNewReview({ ...newReview, rating: index + 1 })}>
+                        <input {...register("rating", { required: true })} type="radio" name="rating" value={index + 1} className="sr-only" />
+                        <span className={`text-xl ${index + 1 <= getValues("rating") ? "text-yellow-500" : "text-gray-500 grayscale"}`}>⭐️</span>
+                      </label>
+                    ))}
+                  </div>
+                  {errors.rating && <p className="text-red-500 text-xs mt-[-10px]">Please select a rating</p>}
+                </div>
+                <div>
+                  <input {...register("comment", { required: true })} type="text" name="comment" className="focus:outline-none w-[20vw] py-2 bg-zinc-50" placeholder="Enter the comment" />
+                  {errors.comment && <p className="text-red-500 text-xs mt-[-10px]">Please select a rating</p>}
+                </div>
+              </div>
+            </form>
+
+            <button className="bg-[#b17f44] text-white font-bold py-2 px-4 rounded-lg mb-4" type="submit" >
+              Add your reviews
+            </button>
+          </div>
+
+
     </div>
 
     </div>
